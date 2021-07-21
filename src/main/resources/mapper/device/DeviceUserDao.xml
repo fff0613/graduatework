@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.DeviceUserDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.DeviceUserEntity" id="deviceUserMap">
+        <result property="deviceid" column="deviceId" jdbcType="INTEGER"/>
+        <result property="userid" column="userId" jdbcType="BIGINT"/>
+        <result property="role" column="role"  jdbcType="VARCHAR"/>
+        <result property="descr" column="descr" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="getUserIdByDeviceId" resultType="io.renren.modules.device.entity.DeviceUserEntity">
+        select * from device_user where deviceId = #{param1}
+    </select>
+<!--    <select id="getUserIdByDeviceId" resultType="io.renren.modules.device.entity.FellowEntity">-->
+<!--        select device_user.deviceId,device_user.userId,username,role,mobile,email,descr from device_user,sys_user where device_user.userId in(-->
+<!--        select userId from device_user where deviceId = #{param1}) and sys_user.user_id = device_user.userId-->
+<!--    </select>-->
+    <select id="getUserByDeviceId" resultType="io.renren.modules.device.entity.DeviceUserEntity">
+--         select sys_user.* from device_user,sys_user where device_user.userId in() and sys_user.user_id = device_user.userId
+            select * from device_user where deviceId = #{param1} and role = #{param2}
+    </select>
+    <insert id="insertUser" parameterType="io.renren.modules.device.entity.FellowEntity" useGeneratedKeys="true" keyProperty="userid">
+        insert into sys_user(username,mobile,email) values(#{username},#{mobile},#{email})
+    </insert>
+    <select id="queryId" resultType="Integer">
+        select userid from fellow where username = #{param1} and mobile = #{param2} and email = #{param3}
+    </select>
+    <select id="insertFellow" parameterType="io.renren.modules.device.entity.FellowEntity">
+        insert into device_user(deviceId,userId,role,descr) values(#{deviceid},#{userid},#{role},#{descr})
+    </select>
+    <delete id="deleteFellow" parameterType="io.renren.modules.device.entity.FellowEntity">
+        delete from device_user where deviceId = #{deviceid} and userId = #{userid}
+    </delete>
+</mapper>

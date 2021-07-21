@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.CompanyDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.CompanyEntity" id="companyMap">
+        <result property="companyid" column="companyId" jdbcType="VARCHAR"/>
+        <result property="innerid" column="innerId" jdbcType="VARCHAR"/>
+        <result property="companyname" column="companyName" jdbcType="VARCHAR"/>
+        <result property="shortname" column="shortName" jdbcType="VARCHAR"/>
+        <result property="companytype" column="companyType" jdbcType="VARCHAR"/>
+        <result property="country" column="country" jdbcType="VARCHAR"/>
+        <result property="province" column="province" jdbcType="VARCHAR"/>
+        <result property="city" column="city" jdbcType="VARCHAR"/>
+        <result property="district" column="district" jdbcType="VARCHAR"/>
+        <result property="street" column="street" jdbcType="VARCHAR"/>
+        <result property="streetnumber" column="streetNumber" jdbcType="INTEGER"/>
+        <result property="state" column="state" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="queryAll" resultType="io.renren.modules.device.entity.CompanyEntity">
+        select * from company
+    </select>
+    <insert id="insertCpy" parameterType="io.renren.modules.device.entity.CompanyEntity">
+        INSERT INTO company(companyId,innerId,companyName,shortName,companyType,country,province
+        ,city,district,street,streetNumber,state) values(#{companyid},#{innerid},#{companyname},#{shortname},#{companytype},#{country},#{province},#{city},#{district},#{street},#{streetnumber},#{state})
+    </insert>
+    <select id="queryByName" parameterType="java.lang.String" resultType="io.renren.modules.device.entity.CompanyEntity">
+        select * from company where companyName like concat('%',#{s},'%')
+    </select>
+    <select id="queryList" resultType="java.lang.String">
+        select companyName from company
+    </select>
+    <select id="querySupList" resultType="java.lang.String">
+        select companyName from company where companyType = "供应商" and state = '启用'
+    </select>
+    <select id="queryManList" resultType="java.lang.String">
+        select companyName from company where companyType = "制造商" and state = '启用'
+    </select>
+    <update id="updateCpy" parameterType="io.renren.modules.device.entity.CompanyEntity">
+        update company set companyId = #{companyid},innerId=#{innerid},shortName=#{shortname},country=#{country},province=#{province}
+            ,city=#{city},district=#{district},street=#{street},streetNumber=#{streetnumber},state=#{state} where companyName = #{companyname}
+    </update>
+    <delete id="deleteCpy" parameterType="java.lang.String">
+        delete from company where companyName = #{cpyName}
+    </delete>
+
+</mapper>

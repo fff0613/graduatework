@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.DeviceModelDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.DeviceModelEntity" id="deviceModelMap">
+        <result property="model" column="model"/>
+        <result property="modelname" column="modelName"/>
+        <result property="type" column="type"/>
+    </resultMap>
+    <select id="queryAll" resultType="io.renren.modules.device.entity.DeviceModelEntity">
+        select * from device_model
+    </select>
+    <insert id="insertModel" parameterType="io.renren.modules.device.entity.DeviceModelEntity">
+        INSERT INTO device_model(model,modelName,type) values(#{model},#{modelname},#{type})
+    </insert>
+    <select id="queryByName" parameterType="java.lang.String" resultType="io.renren.modules.device.entity.DeviceModelEntity">
+        select * from device_model where model like concat('%',#{s},'%')
+    </select>
+    <select id="queryModelList" resultType="java.lang.String">
+        select model from device_model
+    </select>
+    <update id="updateModel" parameterType="io.renren.modules.device.entity.DeviceModelEntity">
+        update device_model set modelName = #{modelname} ,type = #{type} where model = #{model}
+    </update>
+    <delete id="deleteModel" parameterType="java.lang.String">
+        delete from device_model where model = #{model}
+    </delete>
+    <select id="queryByType" resultType="String">
+        select model from device_model where type = #{param1}
+    </select>
+</mapper>

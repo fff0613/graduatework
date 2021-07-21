@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.MaintainprojectDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.MaintainprojectEntity" id="maintainprojectMap">
+        <result property="projectid" column="projectid" jdbcType="INTEGER"/>
+        <result property="projectname" column="projectname" jdbcType="VARCHAR"/>
+        <result property="projectloc" column="projectloc" jdbcType="VARCHAR"/>
+        <result property="projecttype" column="projecttype" jdbcType="VARCHAR"/>
+        <result property="starttime" column="starttime" jdbcType="TIMESTAMP"/>
+        <result property="endtime" column="endtime" jdbcType="TIMESTAMP"/>
+        <result property="state" column="state" jdbcType="VARCHAR"/>
+        <result property="estimate" column="estimate" jdbcType="INTEGER"/>
+        <result property="isdelivery" column="isdelivery" jdbcType="INTEGER"/>
+        <result property="con" column="con" jdbcType="VARCHAR"/>
+        <result property="contype" column="contype" jdbcType="VARCHAR"/>
+        <result property="conproject" column="conproject"/>
+        <result property="unit" column="unit" jdbcType="VARCHAR"/>
+        <result property="cycle" column="cycle" jdbcType="INTEGER"/>
+        <result property="template" column="template" jdbcType="INTEGER"/>
+        <result property="deviceid" column="deviceid" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="getProList" resultType="Integer">
+        select distinct proid from maintain_device where deviceid = #{param1}
+    </select>
+    <select id="getDeviceList" resultType="Integer">
+        select deviceid from maintain_device where proid = #{param1}
+    </select>
+    <insert id="insertPro" parameterType="io.renren.modules.device.entity.MaintainprojectEntity" keyProperty="projectid" useGeneratedKeys="true">
+        insert into maintainproject(projectname,projectloc,projecttype,starttime,endtime,state,estimate,isdelivery,con,contype,conproject,unit,cycle,template,deviceid)
+        values (#{projectname},#{projectloc},#{projecttype},#{starttime},#{endtime},#{state},#{estimate},#{isdelivery},#{con},#{contype},#{conproject},#{unit},#{cycle},#{template},#{deviceid})
+    </insert>
+    <update id="updatePro" parameterType="io.renren.modules.device.entity.MaintainprojectEntity">
+        update maintainproject set projectname=#{projectname},projectloc=#{projectloc}
+        ,projecttype=#{projecttype},starttime=#{starttime},endtime=#{endtime},state=#{state},estimate=#{estimate}
+        ,isdelivery=#{isdelivery},con=#{con},contype=#{contype},conproject=#{conproject},unit=#{unit},cycle=#{cycle},template=#{template}
+        where projectid = #{projectid}
+    </update>
+    <delete id="deletePro" parameterType="io.renren.modules.device.entity.MaintainprojectEntity">
+        delete from maintainproject where projectid = #{param1}
+    </delete>
+    <select id="queryAll" resultType="io.renren.modules.device.entity.MaintainprojectEntity">
+        select * from maintainproject order by projectid desc
+    </select>
+
+    <insert id="insertMD" parameterType="Integer">
+        insert into maintain_device(proid,deviceid,iscomplete) values (#{param1},#{param2},false)
+    </insert>
+    <update id="updateMD" parameterType="io.renren.modules.device.entity.MaintainDeviceEntity">
+        insert into maintain_device(proid,deviceid,iscomplete) values (#{proid},#{deviceid},#{iscomplete})
+    </update>
+    <select id="queryByTheme" resultType="io.renren.modules.device.entity.MaintainprojectEntity">
+        select * from maintainproject where  projectname like concat('%',#{theme},'%') order by projectid desc
+    </select>
+    <select id="queryByType" resultType="io.renren.modules.device.entity.MaintainprojectEntity">
+        select * from maintainproject where projecttype = #{type} order by projectid desc
+    </select>
+    <select id="queryByState" resultType="io.renren.modules.device.entity.MaintainprojectEntity">
+        select * from maintainproject where state = #{state} order by projectid desc
+    </select>
+    <select id="queryByTypeAndState" resultType="io.renren.modules.device.entity.MaintainprojectEntity">
+        select * from maintainproject where projecttype = #{type} and state = #{state} order by projectid desc
+    </select>
+    <select id="queryByTypeAndTheme" resultType="io.renren.modules.device.entity.MaintainprojectEntity">
+        select * from maintainproject where projecttype = #{type} and projectname like concat('%',#{theme},'%') order by projectid desc
+    </select>
+    <select id="queryByStateAndTheme" resultType="io.renren.modules.device.entity.MaintainprojectEntity">
+        select * from maintainproject where state = #{state} and projectname like concat('%',#{theme},'%') order by projectid desc
+    </select>
+    <select id="queryByTypeAndStateAndTheme" resultType="io.renren.modules.device.entity.MaintainprojectEntity">
+        select * from maintainproject where projecttype = #{type} and state = #{state} and projectname like concat('%',#{theme},'%') order by projectid desc
+    </select>
+</mapper>

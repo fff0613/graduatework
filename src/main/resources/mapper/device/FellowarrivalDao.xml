@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.FellowarrivalDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.FellowarrivalEntity" id="fellowarrivalMap">
+        <result property="userid" column="userid"/>
+        <result property="username" column="username"/>
+        <result property="arrivaltime" column="arrivaltime"/>
+        <result property="arrivalloc" column="arrivalloc"/>
+        <result property="country" column="country"/>
+        <result property="province" column="province"/>
+        <result property="city" column="city"/>
+        <result property="district" column="district"/>
+        <result property="street" column="street"/>
+        <result property="streetnumber" column="streetNumber"/>
+    </resultMap>
+
+
+</mapper>

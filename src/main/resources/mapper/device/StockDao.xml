@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.StockDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.StockEntity" id="stockMap">
+        <result property="stockname" column="stockName" jdbcType="VARCHAR"/>
+        <result property="stockroom" column="stockRoom" jdbcType="VARCHAR"/>
+        <result property="stocktype" column="stockType" jdbcType="VARCHAR"/>
+        <result property="stockdetailloc" column="stockDetailLoc" jdbcType="VARCHAR"/>
+        <result property="stockcontainer" column="stockContainer" jdbcType="VARCHAR"/>
+        <result property="orgname" column="orgName" jdbcType="VARCHAR"/>
+        <result property="companyname" column="companyName" jdbcType="VARCHAR"/>
+        <result property="country" column="country" jdbcType="VARCHAR"/>
+        <result property="province" column="province" jdbcType="VARCHAR"/>
+        <result property="city" column="city" jdbcType="VARCHAR"/>
+        <result property="district" column="district" jdbcType="VARCHAR"/>
+        <result property="street" column="street" jdbcType="VARCHAR"/>
+        <result property="streetnumber" column="streetNumber" jdbcType="INTEGER"/>
+        <result property="state" column="state" jdbcType="VARCHAR"/>
+        <result property="executorid" column="executorId" jdbcType="BIGINT"/>
+        <result property="executor" column="executor" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="getOrgName" resultType="java.lang.String">
+        select orgName from stock where stockName = #{param1}
+    </select>
+    <select id="queryAll" resultType="io.renren.modules.device.entity.StockEntity">
+        select * from stock
+    </select>
+    <insert id="insertStock" parameterType="io.renren.modules.device.entity.StockEntity">
+        INSERT INTO stock values(#{stockname},#{stockroom},#{stocktype},#{stockdetailloc},#{stockcontainer}
+            ,#{orgname},#{companyname},#{country},#{province},#{city},#{district},#{street},#{streetnumber}
+            ,#{state},#{executorid},#{executor})
+    </insert>
+    <select id="queryByName" parameterType="java.lang.String" resultType="io.renren.modules.device.entity.StockEntity">
+        select * from stock where stockName like concat('%',#{s},'%')
+    </select>
+    <select id="queryList" resultType="java.lang.String">
+        select distinct stockName from stock where state = '启用'
+    </select>
+    <update id="updateStock" parameterType="io.renren.modules.device.entity.StockEntity">
+        update stock set stockName = #{stockname}, stockRoom = #{stockroom},stockType = #{stocktype},stockDetailLoc = #{stockdetailloc}
+        ,stockContainer = #{stockcontainer},orgName = #{orgname},companyName = #{companyname},country = #{country},province = #{province}
+        ,city = #{city},district = #{district},street = #{street},streetNumber = #{streetnumber},state = #{state},executorId = #{executorid},executor = #{executor}
+         where stockName = #{stockname}
+    </update>
+    <delete id="deleteStock" parameterType="java.lang.String">
+        delete from stock where stockName = #{stockName}
+    </delete>
+
+</mapper>

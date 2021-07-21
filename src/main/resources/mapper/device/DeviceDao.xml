@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.DeviceDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+<!--    <resultMap id="deviceList" type="io.renren.modules.device.entity.DeviceBriefIfo">-->
+<!--        <result property="id" column="deviceId" jdbcType="INTEGER"/>-->
+<!--        <result property="name" column="deviceName" jdbcType="VARCHAR"/>-->
+<!--        <result property="state" column="deviceState" jdbcType="VARCHAR"/>-->
+<!--    </resultMap>-->
+    <resultMap type="io.renren.modules.device.entity.DeviceEntity" id="deviceMap">
+        <result property="deviceid" column="deviceId" jdbcType="INTEGER"/>
+        <result property="devicename" column="deviceName" jdbcType="VARCHAR"/>
+        <result property="devicetype" column="deviceType" jdbcType="VARCHAR"/>
+        <result property="devicemodel" column="deviceModel" jdbcType="VARCHAR"/>
+        <result property="devicesourse" column="deviceSourse" jdbcType="VARCHAR"/>
+        <result property="devicestate" column="deviceState" jdbcType="VARCHAR"/>
+        <result property="buydate" column="buyDate" jdbcType="TIMESTAMP"/>
+        <result property="taxrate" column="taxRate" jdbcType="FLOAT"/>
+        <result property="beforetax" column="beforeTax" jdbcType="FLOAT"/>
+        <result property="tax" column="tax" jdbcType="FLOAT"/>
+        <result property="manufacture" column="manufacture" jdbcType="VARCHAR"/>
+        <result property="supporter" column="supporter" jdbcType="VARCHAR"/>
+        <result property="storagedate" column="storageDate" jdbcType="TIMESTAMP"/>
+        <result property="storagebatch" column="storageBatch" jdbcType="INTEGER"/>
+        <result property="stockdetailloc" column="stockDetailLoc" jdbcType="VARCHAR"/>
+        <result property="stockcontainer" column="stockContainer" jdbcType="VARCHAR"/>
+        <result property="stockroom" column="stockRoom" jdbcType="VARCHAR"/>
+        <result property="stockname" column="stockName" jdbcType="VARCHAR"/>
+        <result property="stockid" column="stockId" jdbcType="VARCHAR"/>
+        <result property="effectivedate" column="effectiveDate" jdbcType="TIMESTAMP"/>
+        <result property="amount" column="amount" jdbcType="INTEGER"/>
+        <result property="startdate" column="startDate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <select id="queryProject" resultType="io.renren.modules.device.entity.MaintainprojectEntity">
+        select * from maintainproject where deviceid = #{param1}
+    </select>
+    <insert id="insertDevice" parameterType="io.renren.modules.device.entity.DeviceEntity" useGeneratedKeys="true" keyProperty="deviceid">
+        insert into device(deviceName,deviceType,deviceModel,deviceSourse,deviceState,buyDate,taxRate,beforeTax,
+        tax,manufacture,supporter,storageDate,storageBatch,stockDetailLoc,stockContainer,stockRoom,stockName,stockId,
+        effectiveDate,amount,startDate) values(#{devicename},#{devicetype},#{devicemodel},#{devicesourse},"已录入",#{buydate},#{taxrate},#{beforetax},#{tax},#{manufacture},#{supporter},#{storagedate},#{storagebatch},#{stockdetailloc},#{stockcontainer},#{stockroom},#{stockname},#{stockid},#{effectivedate},#{amount},#{startdate})
+    </insert>
+    <update id="updateBrief" parameterType="io.renren.modules.device.entity.DeviceBriefIfo">
+        update device set deviceName = #{name},deviceState=#{state} where deviceId=#{id}
+    </update>
+    <update id="updateStock" parameterType="map">
+        update device set stockName = #{stockname},deviceState = #{state} where deviceId = #{deviceid}
+    </update>
+    <update id="updateDevice" parameterType="io.renren.modules.device.entity.DeviceEntity">
+        update device set deviceName=#{devicename},deviceType=#{devicetype},deviceModel=#{devicemodel}
+        ,deviceSourse=#{devicesourse},deviceState=#{devicestate},buyDate=#{buydate},taxRate=#{taxrate},beforeTax=#{beforetax}
+        ,tax=#{tax},manufacture=#{manufacture},supporter=#{supporter},storageDate=#{storagedate},
+        storageBatch=#{storagebatch},stockDetailLoc=#{stockdetailloc},stockContainer=#{stockcontainer},stockRoom=#{stockroom},stockName=#{stockname},stockId=#{stockid}
+        ,effectiveDate=#{effectivedate},amount=#{amount},startDate=#{startdate} where deviceId=#{deviceid}
+    </update>
+    <delete id="deleteDevice" parameterType="java.lang.Integer">
+        delete from device where deviceId = #{deviceId}
+    </delete>
+    <select id="queryLoc" resultType="map">
+        select stockName,stockRoom,stockDetailLoc,stockContainer from device where deviceId = #{param1}
+    </select>
+    <select id="getDeviceList" resultType="io.renren.modules.device.entity.DeviceEntity">
+        select deviceId,deviceName,deviceState from device
+    </select>
+    <select id="queryManuList" resultType="io.renren.modules.device.entity.CompanyEntity">
+        select *  from company where companyName = (select manufacture from device where deviceId=#{param1})
+    </select>
+    <select id="querySupList" resultType="io.renren.modules.device.entity.CompanyEntity">
+        select *  from company where companyName = (select supporter from device where deviceId=#{param1})
+    </select>
+    <select id="queryOrgList" resultType="io.renren.modules.device.entity.OrganizationEntity">
+        select *  from organization where orgName in(
+        select orgName from device_org where deviceId = #{param1})
+    </select>
+    <select id="queryAll"  resultType="io.renren.modules.device.entity.DeviceEntity">
+		select * from device
+	</select>
+    <select id="queryById" resultType="io.renren.modules.device.entity.DeviceEntity" >
+        select * from device where deviceId = #{param1}
+    </select>
+    <select id="queryByStock" resultType="io.renren.modules.device.entity.DeviceEntity">
+        select  * from device where stockName = #{param1}
+    </select>
+    <select id="queryByStockAndState" resultType="io.renren.modules.device.entity.DeviceEntity">
+        select  * from device where stockName = #{param1} and deviceState = #{param2}
+    </select>
+    <select id="queryByState" resultType="io.renren.modules.device.entity.DeviceEntity" >
+        select * from device where deviceState = #{param1}
+    </select>
+    <select id="queryByOrg" resultType="io.renren.modules.device.entity.DeviceEntity" >
+        select * from device where organization = #{param1}
+    </select>
+    <select id="queryByName" resultType="io.renren.modules.device.entity.DeviceEntity" >
+        select * from device where deviceName like concat('%',#{param1},'%')
+    </select>
+    <select id="queryByType" resultType="io.renren.modules.device.entity.DeviceEntity" >
+        select * from device where deviceType = #{param1}
+    </select>
+    <select id="queryByOrgAndLoc" resultType="io.renren.modules.device.entity.DeviceEntity" >
+        select * from device where stockDetailLoc = #{param1} and organization = #{param2}
+    </select>
+    <select id="queryByOrgAndState" resultType="io.renren.modules.device.entity.DeviceEntity" >
+        select * from device where organization = #{param1} and deviceState = #{param2}
+    </select>
+    <select id="queryByOrgAndType" resultType="io.renren.modules.device.entity.DeviceEntity" >
+        select * from device where organization = #{param1} and deviceType = #{param2}
+    </select>
+    <select id="queryByLocAndState" resultType="io.renren.modules.device.entity.DeviceEntity" >
+        select * from device where stockDetailLoc = #{param1} and deviceState = #{param2}
+    </select>
+    <select id="queryByLocAndType" resultType="io.renren.modules.device.entity.DeviceEntity" >
+        select * from device where stockDetailLoc = #{param1} and deviceType = #{param2}
+    </select>
+    <select id="queryByStateAndType" resultType="io.renren.modules.device.entity.DeviceEntity" >
+        select * from device where deviceState = #{param1} and deviceType = #{param2}
+    </select>
+    <select id="queryByOrgAndStateAndLoc" resultType="io.renren.modules.device.entity.DeviceEntity" >
+        select * from device where organization = #{param1} and deviceState = #{param3} and stockDetailLoc = #{param2}
+    </select>
+    <select id="queryByOrgAndStateAndType" resultType="io.renren.modules.device.entity.DeviceEntity" >
+        select * from device where organization = #{param1}  and stockDetailLoc = #{param2}  and deviceType = #{param3}
+    </select>
+    <select id="queryByLocAndStateAndType" resultType="io.renren.modules.device.entity.DeviceEntity" >
+        select * from device where stockDetailLoc = #{param1} and deviceState = #{param2} and deviceType = #{param3}
+    </select>
+    <select id="queryByOrgAndStateAndLocAnaType" resultType="io.renren.modules.device.entity.DeviceEntity" >
+        select * from device where organization = #{param1} and deviceState = #{param3} and stockDetailLoc = #{param2}
+            and deviceType = #{param3}
+    </select>
+    <select id="queryByOrgAndStateAndTypeAndName" resultType="io.renren.modules.device.entity.DeviceEntity">
+        select * from device where supporter = #{param1}  and stockDetailLoc = #{param2}
+         and deviceType = #{param3} and deviceName like concat('%',#{param4},'%')
+    </select>
+    <select id="queryByOrgAndStateAndName" resultType="io.renren.modules.device.entity.DeviceEntity">
+        select * from device where supporter = #{param1} and deviceState = #{param2} and deviceName like concat('%',#{param3},'%')
+    </select>
+    <select id="queryByOrgAndTypeAndName" resultType="io.renren.modules.device.entity.DeviceEntity">
+        select * from device where supporter = #{param1} and deviceType = #{param2} and deviceName like concat('%',#{param3},'%')
+    </select>
+    <select id="queryByStateAndTypeAndName" resultType="io.renren.modules.device.entity.DeviceEntity">
+        select * from device where deviceState = #{param1} and deviceType = #{param2} and deviceName like concat('%',#{param3},'%')
+    </select>
+    <select id="queryByOrgAndName" resultType="io.renren.modules.device.entity.DeviceEntity">
+        select * from device where supporter = #{param1} and deviceName like concat('%',#{param2},'%')
+    </select>
+    <select id="queryByTypeAndName" resultType="io.renren.modules.device.entity.DeviceEntity">
+        select * from device where deviceType = #{param1} and deviceName like concat('%',#{param2},'%')
+    </select>
+    <select id="queryByStateAndName" resultType="io.renren.modules.device.entity.DeviceEntity">
+        select * from device where deviceState = #{param1} and deviceName like concat('%',#{param2},'%')
+    </select>
+    <select id="queryDeviceLog" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where deviceid = #{param1} order by(happenTime) DESC
+    </select>
+    <select id="queryMaintainLog" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where deviceid = #{param1} and ordertype = '保养' order by(reporthappentime) DESC;
+    </select>
+    <select id="queryRepairLog" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where deviceid = #{param1} and ordertype = '维修' order by(reporthappentime) DESC;
+    </select>
+    <select id="queryByStockAndName" resultType="io.renren.modules.device.entity.DeviceEntity">
+        select * from device where stockName = #{param1} and deviceName like concat('%',#{param2},'%')
+    </select>
+</mapper>

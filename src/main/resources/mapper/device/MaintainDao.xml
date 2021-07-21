@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.MaintainDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.MaintainEntity" id="maintainMap">
+        <result property="workorderid" column="workorderid" jdbcType="INTEGER"/>
+        <result property="deviceid" column="deviceid" jdbcType="INTEGER"/>
+        <result property="reporthappentime" column="reporthappentime" jdbcType="TIMESTAMP"/>
+        <result property="faultreason" column="faultreason" jdbcType="VARCHAR"/>
+        <result property="runtimestate" column="runtimestate" jdbcType="VARCHAR"/>
+        <result property="desrc" column="desrc" jdbcType="VARCHAR"/>
+        <result property="urgency" column="urgency" jdbcType="INTEGER"/>
+        <result property="limittime" column="limittime" jdbcType="TIMESTAMP"/>
+        <result property="executorid" column="executorid" jdbcType="BIGINT"/>
+        <result property="reporterid" column="reporterid" jdbcType="BIGINT"/>
+        <result property="faultdescr" column="faultdescr" jdbcType="VARCHAR"/>
+        <result property="faulttype" column="faulttype" jdbcType="VARCHAR"/>
+        <result property="maintaintype" column="maintaintype" jdbcType="VARCHAR"/>
+        <result property="beforedescr" column="beforedescr" jdbcType="VARCHAR"/>
+        <result property="afterdescr" column="afterdescr" jdbcType="VARCHAR"/>
+        <result property="preventmeasure" column="preventmeasure" jdbcType="VARCHAR"/>
+        <result property="distributiontime" column="distributiontime" jdbcType="TIMESTAMP"/>
+        <result property="executehappentime" column="executehappentime" jdbcType="TIMESTAMP"/>
+        <result property="completetime" column="completetime" jdbcType="TIMESTAMP"/>
+        <result property="checkadice" column="checkadice" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="VARCHAR"/>
+        <result property="timelimit" column="timelimit" jdbcType="INTEGER"/>
+        <result property="unit" column="unit" jdbcType="VARCHAR"/>
+        <result property="arrivallimit" column="arrivallimit" jdbcType="INTEGER"/>
+        <result property="ordertype" column="ordertype" jdbcType="BIGINT"/>
+        <result property="theme" column="theme" jdbcType="VARCHAR"/>
+        <result property="distributeid" column="distributeid" jdbcType="BIGINT"/>
+        <result property="completeid" column="completeid" jdbcType="BIGINT"/>
+    </resultMap>
+    <select id="querylist" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain order by reporthappentime desc,urgency asc
+    </select>
+<!--    //where executorid = #{param1} or executorid = null or reporterid = #{param1} or distributeid #{param1} or completeid = #{param1}-->
+    <select id="queryByExeId" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where executorid = #{param1} or executorid = null or reporterid = #{param1} or distributeid = #{param1} or completeid = #{param1} order by reporthappentime desc,urgency asc
+    </select>
+    <select id="queryByContent" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where (theme like concat('%',#{param2},'%') or state like concat('%',#{param2},'%')) and (executorid = #{param1} or executorid = null or reporterid = #{param1} or distributeid = #{param1} or completeid = #{param1}) order by reporthappentime desc,urgency asc
+    </select>
+    <update id="updateDelivery" parameterType="io.renren.modules.device.entity.MaintainEntity">
+        update maintain set desrc = #{desrc},executorid = #{executorid},distributeid = #{distributeid},distributiontime = #{distributiontime},state = '待执行' where workorderid = #{workorderid}
+    </update>
+    <update id="updateExecute" parameterType="io.renren.modules.device.entity.MaintainEntity">
+        update maintain set faultreason = #{faultreason},faultdescr = #{faultdescr},faulttype=#{faulttype},beforedescr = #{beforedescr},afterdescr = #{afterdescr},preventmeasure=#{preventmeasure}
+                          ,executehappentime = #{executehappentime},state='待确认' where workorderid = #{workorderid}
+    </update>
+    <update id="updateConfirm" parameterType="io.renren.modules.device.entity.MaintainEntity">
+        update maintain set completetime=#{completetime},state='已完成',completeid=#{completeid},checkadice=#{checkadice} where workorderid = #{workorderid}
+    </update>
+    <insert id="insertRepair" parameterType="io.renren.modules.device.entity.MaintainEntity">
+        insert into maintain(deviceid,reporthappentime,runtimestate,desrc,urgency
+        ,limittime,reporterid,executorid,state,ordertype,theme,maintaintype) values(#{deviceid},#{reporthappentime}
+        ,#{runtimestate},#{desrc},#{urgency},#{limittime},#{reporterid},#{executorid},#{state}
+        ,#{ordertype},#{theme},#{maintaintype})
+    </insert>
+    <select id="queryMaintainLog" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where deviceid = #{param1} and ordertype = '保养' order by(reporthappentime) DESC;
+    </select>
+    <select id="queryRepairLog" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where deviceid = #{param1} and ordertype = '维修' order by(reporthappentime) DESC;
+    </select>
+    <select id="queryByCon" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where state = #{state} and ordertype = #{type} and deviceid = #{device}
+        and reporthappentime >= #{start} and reporthappentime &lt;= #{end} and theme like concat('%',#{theme},'%') order by(reporthappentime) DESC;
+    </select>
+    <select id="queryByTypeAndStateAndDeviceAndTheme" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where ordertype = #{type} and state = #{state} and deviceid = #{device} and theme like concat('%',#{theme},'%') order by reporthappentime desc,urgency asc
+    </select>
+    <select id="queryByStateAndDeviceAndTheme" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where state = #{state} and deviceid = #{device} and theme like concat('%',#{theme},'%') order by reporthappentime desc,urgency asc
+    </select>
+    <select id="queryByTypeAndStateAndTheme" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where ordertype = #{type} and state = #{state} and theme like concat('%',#{theme},'%') order by reporthappentime desc,urgency asc
+    </select>
+    <select id="queryByTypeAndDeviceAndTheme" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where ordertype = #{type} and deviceid = #{device} and theme like concat('%',#{theme},'%') order by reporthappentime desc,urgency asc
+    </select>
+    <select id="queryByTypeAndStateAndDevice" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where ordertype = #{type} and state = #{state} and deviceid = #{device} order by reporthappentime desc,urgency asc
+    </select>
+    <select id="queryByDeviceAndTheme" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where deviceid = #{device} and theme like concat('%',#{theme},'%') order by reporthappentime desc,urgency asc
+    </select>
+    <select id="queryByStateAndTheme" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where state = #{state} and theme like concat('%',#{theme},'%') order by reporthappentime desc,urgency asc
+    </select>
+    <select id="queryByStateAndDevice" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where state = #{state} and deviceid = #{device} order by reporthappentime desc,urgency asc
+    </select>
+    <select id="queryByTypeAndTheme" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where ordertype = #{type} and theme like concat('%',#{theme},'%') order by reporthappentime desc,urgency asc
+    </select>
+    <select id="queryByTypeAndDevice" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where ordertype = #{type} and theme like concat('%',#{theme},'%') order by reporthappentime desc,urgency asc
+    </select>
+    <select id="queryByTypeAndState" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where ordertype = #{type} and state = #{state} order by reporthappentime desc,urgency asc
+    </select>
+    <select id="queryByTheme" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where  theme like concat('%',#{theme},'%') order by reporthappentime desc,urgency asc
+    </select>
+    <select id="queryByType" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where ordertype = #{type} order by reporthappentime desc,urgency asc
+    </select>
+    <select id="queryByState" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where state = #{state} order by reporthappentime desc,urgency asc
+    </select>
+    <select id="queryByDevice" resultType="io.renren.modules.device.entity.MaintainEntity">
+        select * from maintain where deviceid = #{device} order by reporthappentime desc,urgency asc
+    </select>
+
+</mapper>

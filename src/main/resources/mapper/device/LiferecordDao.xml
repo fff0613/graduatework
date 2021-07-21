@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.LiferecordDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.LiferecordEntity" id="liferecordMap">
+        <result property="recordid" column="recordId" jdbcType="BIGINT"/>
+        <result property="recordtype" column="recordType" jdbcType="VARCHAR"/>
+        <result property="organizationname" column="organizationName" jdbcType="VARCHAR"/>
+        <result property="deviceid" column="deviceid" jdbcType="INTEGER"/>
+        <result property="happentime" column="happenTime" jdbcType="TIMESTAMP"/>
+        <result property="storagetype" column="storageType" jdbcType="VARCHAR"/>
+        <result property="storagebatch" column="storageBatch" jdbcType="INTEGER"/>
+        <result property="originorganizationname" column="originOrganizationName" jdbcType="VARCHAR"/>
+        <result property="deliverybatch" column="deliverybatch" jdbcType="INTEGER"/>
+        <result property="lenttime" column="lentTime" jdbcType="TIMESTAMP"/>
+        <result property="givebacktime" column="givebackTime" jdbcType="TIMESTAMP"/>
+        <result property="lentuserid" column="lentUserId" jdbcType="INTEGER"/>
+        <result property="givebackuserid" column="givebackUserId" jdbcType="INTEGER"/>
+        <result property="lentstate" column="lentState" jdbcType="VARCHAR"/>
+        <result property="givebackstate" column="givebackState" jdbcType="VARCHAR"/>
+        <result property="allocationtime" column="allocationTime" jdbcType="TIMESTAMP"/>
+        <result property="tuneintime" column="tuneinTime" jdbcType="TIMESTAMP"/>
+        <result property="tuneincompanyname" column="tuneinCompanyName" jdbcType="VARCHAR"/>
+        <result property="tuneindepartment" column="tuneinDepartment" jdbcType="VARCHAR"/>
+        <result property="residualvaule" column="residualVaule" jdbcType="FLOAT"/>
+        <result property="moneysum" column="moneySum" jdbcType="FLOAT"/>
+        <result property="returncompanyname" column="returnCompanyName" jdbcType="VARCHAR"/>
+        <result property="oldstockcontainer" column="oldstockContainer" jdbcType="VARCHAR"/>
+        <result property="oldstockroom" column="oldstockRoom" jdbcType="VARCHAR"/>
+        <result property="oldstockname" column="oldStockName" jdbcType="VARCHAR"/>
+        <result property="oldcompanyname" column="oldCompanyName" jdbcType="VARCHAR"/>
+        <result property="oldorgname" column="oldOrgName" jdbcType="VARCHAR"/>
+        <result property="stockcontainer" column="stockContainer" jdbcType="VARCHAR"/>
+        <result property="stockroom" column="stockRoom" jdbcType="VARCHAR"/>
+        <result property="stockname" column="stockName" jdbcType="VARCHAR"/>
+        <result property="companyname" column="companyName" jdbcType="VARCHAR"/>
+        <result property="orgname" column="orgName" jdbcType="VARCHAR"/>
+        <result property="reporterid" column="reporterId" jdbcType="BIGINT"/>
+        <result property="executorid" column="executorId" jdbcType="BIGINT"/>
+        <result property="responsibleuserid" column="responsibleUserId" jdbcType="BIGINT"/>
+        <result property="allocationuserid" column="allocationUserId" jdbcType="BIGINT"/>
+        <result property="tuneinuserid" column="tuneinUserId" jdbcType="BIGINT"/>
+        <result property="checkuserid" column="checkUserId" jdbcType="BIGINT"/>
+        <result property="reason" column="reason" jdbcType="VARCHAR"/>
+        <result property="amount" column="amount" jdbcType="INTEGER"/>
+        <result property="state" column="state" jdbcType="VARCHAR"/>
+        <result property="descr" column="descr" jdbcType="VARCHAR"/>
+        <result property="afterdescr" column="afterDescr" jdbcType="VARCHAR"/>
+        <result property="reportername" column="reporterName" jdbcType="VARCHAR"/>
+        <result property="executorname" column="executorName" jdbcType="VARCHAR"/>
+        <result property="devicename" column="deviceName" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="getInventoryComplete" resultType="io.renren.modules.device.entity.InventoryComplete">
+        select * from inventory_complete where orderid = #{param1}
+    </select>
+    <insert id="insertInventoryDevice">
+        insert into inventory_device(orderid,deviceid) values(#{param1},#{param2})
+    </insert>
+    <update id="updateExecutorid" parameterType="io.renren.modules.device.entity.InventoryEntity">
+        update liferecord set happenTime = #{complete},executorId = #{executorid},executorName = #{executorname},state='已完成' where recordId = #{orderid}
+    </update>
+    <insert id="executeInventory" parameterType="io.renren.modules.device.entity.InventoryEntity">
+        insert into inventory_complete(orderid,deviceid,dohave,completetime) values (#{orderid},#{deviceid},#{dohave},#{complete})
+    </insert>
+<!--    <select id="getDeviceList" resultType="Integer">-->
+<!--        select deviceid from liferecord where happenTime = #{param1} and recordType = '盘点'-->
+<!--    </select>-->
+    <select id="getDeviceList" resultType="Integer">
+        select deviceid from inventory_device where orderid = #{param1}
+    </select>
+    <select id="queryById" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where deviceid = #{param1} order by happenTime desc
+    </select>
+    <select id="queryByExeId" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where executorId = #{param1} or executorId = null or reporterId = #{param1} order by happenTime desc
+    </select>
+    <select id="queryByContent" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where (deviceName like concat('%',#{param2},'%') or state like concat('%',#{param2},'%')) and (executorId = #{param1} or executorId = null or reporterId = #{param1}) order by happenTime desc
+    </select>
+    <select id="queryAll" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord order by recordId desc,happenTime desc
+    </select>
+    <select id="storagelist" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = "入库" order by recordId desc,happenTime desc
+    </select>
+    <select id="deliverylist" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = "出库" order by recordId desc,happenTime desc
+    </select>
+    <select id="transferlist" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = "转移" order by recordId desc,happenTime desc
+    </select>
+    <select id="stockreturnlist" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = "退库" order by recordId desc,happenTime desc
+    </select>
+    <select id="returnlist" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = "退货" order by recordId desc,happenTime desc
+    </select>
+    <select id="lentlist" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = "借出" order by recordId desc,happenTime desc
+    </select>
+    <select id="givebacklist" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = "归还" order by recordId desc,happenTime desc
+    </select>
+    <select id="inventorylist" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = "盘点" order by recordId desc,happenTime desc
+    </select>
+    <select id="scraplist" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = "报废" order by recordId desc,happenTime desc
+    </select>
+    <select id="allocationlist" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = "调拨" order by recordId desc,happenTime desc
+    </select>
+    <insert id="insertStorage" parameterType="io.renren.modules.device.entity.LiferecordEntity">
+        INSERT INTO liferecord(recordId,recordType,deviceid,happenTime,storageType,stockName,orgName
+        ,reporterId,amount,descr,stockContainer,stockRoom,companyName,checkUserId
+        ,reason,state,storageBatch,deviceName,executorId,reporterName,executorName)
+        values(#{recordid},#{recordtype},#{deviceid},#{happentime},'入库'
+        ,#{stockname},#{orgname},#{reporterid},#{amount},#{descr},#{stockcontainer},#{stockroom},#{companyname},#{checkuserid},#{reason}
+        ,#{state},#{storagebatch},#{devicename},#{executorid},#{reportername},#{executorname})
+    </insert>
+    <insert id="insertTransfer" parameterType="io.renren.modules.device.entity.LiferecordEntity">
+        INSERT INTO liferecord(recordId,recordType,deviceid,happenTime,storageType
+        ,stockName,orgName,reporterId,executorId,responsibleUserId,amount,descr,afterDescr,originOrganizationName,
+        oldOrgName,oldstockContainer,oldstockRoom,oldCompanyName,stockContainer,stockRoom,companyName,checkUserId,
+        reason,state,deviceName,reporterName,executorName,oldStockName)values(#{recordid},#{recordtype}
+        ,#{deviceid},#{happentime},'转移',#{stockname},#{orgname},#{reporterid},#{executorid},#{responsibleuserid},
+        #{amount},#{descr},#{afterdescr},#{originorganizationname},#{oldorgname},#{oldstockcontainer}
+        ,#{oldstockroom},#{oldcompanyname},#{stockcontainer},#{stockroom},#{companyname},#{checkuserid},#{reason}
+        ,#{state},#{devicename},#{reportername},#{executorname},#{oldstockname})
+    </insert>
+    <insert id="insertStockReturn" parameterType="io.renren.modules.device.entity.LiferecordEntity">
+        INSERT INTO liferecord(recordId,recordType,deviceid,happenTime,storageType,stockName,orgName,reporterId
+        ,executorId,responsibleUserId,amount,descr,afterDescr,stockContainer,stockRoom,companyName,checkUserId
+        ,reason,state,deviceName,reportName,executorName)values(#{recordid},#{recordtype},#{deviceid},#{happentime},'退库',#{stockname},#{orgname},#{reporterid},#{executorid},#{responsibleuserid},#{amount},#{descr},#{afterdescr}
+        ,#{stockcontainer},#{stockroom},#{companyname},#{checkuserid},#{reason}
+        ,#{state},#{devicename},#{reportername},#{executorname})
+    </insert>
+    <insert id="insertGiveBack" parameterType="io.renren.modules.device.entity.LiferecordEntity">
+        INSERT INTO liferecord(recordId,recordType,deviceid,happenTime,storageType,stockName,orgName,reporterId
+        ,executorId,responsibleUserId,amount,descr,afterDescr,stockContainer,stockRoom,companyName,checkUserId
+        ,reason,state,givebackState,deviceName,reporterName,executorName)values(#{recordid},#{recordtype},#{deviceid},#{happentime},'归还',
+        #{stockname},#{orgname},#{reporterid},#{executorid},#{responsibleuserid},#{amount},#{descr},#{afterdescr}
+        ,#{stockcontainer},#{stockroom},#{companyname},#{checkuserid},#{reason}
+        ,#{state},#{givebackstate},#{devicename},#{reportername},#{executorname})
+    </insert>
+    <insert id="insertDelivery" parameterType="io.renren.modules.device.entity.LiferecordEntity">
+        INSERT INTO liferecord(recordId,recordType,deviceid,happenTime,stockName,orgName,reporterId
+        ,executorId,responsibleUserId,amount,descr,afterDescr,stockContainer,stockRoom,companyName,checkUserId
+        ,reason,state,deviceName,reporterName,executorName,oldStockName,oldOrgName,storageType)values(#{recordid},#{recordtype},#{deviceid},#{happentime},#{stockname},#{orgname},#{reporterid},#{executorid},#{responsibleuserid},#{amount},#{descr},#{afterdescr}
+        ,#{stockcontainer},#{stockroom},#{companyname},#{checkuserid},#{reason}
+        ,#{state},#{devicename},#{reportername},#{executorname},#{oldstockname},#{oldorgname},#{storagetype})
+    </insert>
+    <insert id="insertAllocation" parameterType="io.renren.modules.device.entity.LiferecordEntity">
+        INSERT INTO liferecord(recordId,recordType,deviceid,happenTime,stockName,orgName,reporterId,executorId
+        ,responsibleUserId,amount,descr,afterDescr,stockContainer,stockRoom,companyName,checkUserId,reason,state
+        ,deviceName,reporterName,executorName)
+        values(#{recordid},#{recordtype},#{deviceid},#{happentime},#{stockname},#{orgname},#{reporterid},#{executorid}
+        ,#{responsibleuserid},#{amount},#{descr},#{afterdescr},#{stockcontainer},#{stockroom},#{companyname},#{checkuserid},#{reason},#{state}
+        ,#{devicename},#{reportername},#{executorname})
+    </insert>
+    <insert id="insertScrap" parameterType="io.renren.modules.device.entity.LiferecordEntity">
+        INSERT INTO liferecord(recordId,recordType,deviceid,happenTime,stockName,orgName,reporterId,executorId
+        ,responsibleUserId,amount,descr,afterDescr,stockContainer,stockRoom,companyName,checkUserId,reason,state
+        ,deviceName,reporterName,executorName)
+        values(#{recordid},#{recordtype},#{deviceid},#{happentime},#{stockname},#{orgname},#{reporterid},#{executorid}
+        ,#{responsibleuserid},#{amount},#{descr},#{afterdescr},#{stockcontainer},#{stockroom},#{companyname},#{checkuserid},#{reason},#{state}
+        ,#{devicename},#{reportername},#{executorname})
+    </insert>
+    <insert id="insertInventory" parameterType="io.renren.modules.device.entity.LiferecordEntity" useGeneratedKeys="true" keyColumn="recordId" keyProperty="recordid">
+        INSERT INTO liferecord(recordId,recordType,deviceid,happenTime,stockName,orgName,reporterId,executorId
+        ,responsibleUserId,amount,descr,afterDescr,stockContainer,stockRoom,companyName,checkUserId,reason,state
+        ,deviceName,reporterName,executorName)
+        values(#{recordid},#{recordtype},#{deviceid},#{happentime},#{stockname},#{orgname},#{reporterid},#{executorid}
+        ,#{responsibleuserid},#{amount},#{descr},#{afterdescr},#{stockcontainer},#{stockroom},#{companyname},#{checkuserid},#{reason},#{state
+        },#{devicename},#{reportername},#{executorname})
+    </insert>
+    <select id="storageByStock" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '入库' and stockName = #{param1} order by recordId desc,happenTime desc
+    </select>
+    <select id="storageByState" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '入库' and state = #{param1} order by recordId desc,happenTime desc
+    </select>
+    <select id="storageByExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '入库' and executorName like concat('%',#{executor},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="storageByStockAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '入库' and stockName = #{stock} and executorName like concat('%',#{executor},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="storageByStateAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '入库' and state = #{param1} and executorName like concat('%',#{param2},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="storageByStockAndState" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '入库' and stockName = #{param1} and state = #{param2} order by recordId desc,happenTime desc
+    </select>
+    <select id="storageByStockAndStateAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '入库' and stockName = #{param1} and state = #{param2} and executorName like concat('%',#{param3},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="deliveryByStock" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '出库' and oldStockName = #{param1} order by recordId desc,happenTime desc
+    </select>
+    <select id="deliveryByState" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '出库' and state = #{param1} order by recordId desc,happenTime desc
+    </select>
+    <select id="deliveryByExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '出库' and executorName like concat('%',#{param1},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="deliveryByStockAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '出库' and oldStockName = #{param1} and executorName like concat('%',#{param2},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="deliveryByStateAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '出库' and state = #{param1} and executorName like concat('%',#{param2},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="deliveryByStockAndState" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '出库' and oldStockName = #{param1} and state = #{param2} order by recordId desc,happenTime desc
+    </select>
+    <select id="deliveryByStockAndStateAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '出库' and oldStockName = #{param1} and state = #{param2} and executorName like concat('%',#{param3},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="allocationByStock" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = '调拨' and oldStockName = #{param1} order by recordId desc,happenTime desc
+    </select>
+    <select id="allocationByState" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = '调拨' and state = #{param1} order by recordId desc,happenTime desc
+    </select>
+    <select id="allocationByExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = '调拨' and executorName like concat('%',#{param1},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="allocationByStockAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = '调拨' and oldStockName = #{param1} and executorName like concat('%',#{param2},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="allocationByStateAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = '调拨' and state = #{param1} and executorName like concat('%',#{param2},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="allocationByStockAndState" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = '调拨' and oldStockName= #{param1} and state = #{param2} order by recordId desc,happenTime desc
+    </select>
+    <select id="allocationByStockAndStateAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = '调拨' and oldStockName = #{param1} and state = #{param2} and executorName like concat('%',#{param3},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="scrapByStock" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '报废' and stockName = #{param1} order by recordId desc,happenTime desc
+    </select>
+    <select id="scrapByState" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '报废' and state = #{param1} order by recordId desc,happenTime desc
+    </select>
+    <select id="scrapByExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '报废' and executorName like concat('%',#{param1},'%')order by recordId desc,happenTime desc
+    </select>
+    <select id="scrapByStockAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '报废' and stockName = #{param1} and executorName like concat('%',#{param2},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="scrapByStateAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '报废' and state = #{param1} and executorName like concat('%',#{param2},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="scrapByStockAndState" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '报废' and stockName = #{param1} and state = #{param2} order by recordId desc,happenTime desc
+    </select>
+    <select id="scrapByStockAndStateAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '报废' and stockName = #{param1} and state = #{param2} and executorName like concat('%',#{param3},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="inventoryByStock" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '盘点' and stockName = #{param1} order by recordId desc,happenTime desc
+    </select>
+    <select id="inventoryByState" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '盘点' and state = #{param1} order by recordId desc,happenTime desc
+    </select>
+    <select id="inventoryByExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '盘点' and executorName like concat('%',#{param1},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="inventoryByStockAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '盘点' and stockName = #{param1} and executorName like concat('%',#{param2},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="inventoryByStateAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '盘点' and state = #{param1} and executorName like concat('%',#{param2},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="inventoryByStockAndState" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '盘点' and stockName = #{param1} and state = #{param2} order by recordId desc,happenTime desc
+    </select>
+    <select id="inventoryByStockAndStateAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where recordType = '盘点' and stockName = #{param1} and state = #{param2} and executorName like concat('%',#{param3},'%') order by recordId desc,happenTime desc
+    </select>
+
+    <select id="transferByStock" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = '转移' and stockName = #{param1} order by recordId desc,happenTime desc
+    </select>
+    <select id="transferByState" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = '转移' and state = #{param1} order by recordId desc,happenTime desc
+    </select>
+    <select id="transferByExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = '转移' and executorName like concat('%',#{param1},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="transferByStockAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = '转移' and stockName = #{param1} and executorName like concat('%',#{param2},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="transferByStateAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = '转移' and state = #{param1} and executorName like concat('%',#{param2},'%') order by recordId desc,happenTime desc
+    </select>
+    <select id="transferByStockAndState" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = '转移' and stockName = #{param1} and state = #{param2} order by recordId desc,happenTime desc
+    </select>
+    <select id="transferByStockAndStateAndExecutor" resultType="io.renren.modules.device.entity.LiferecordEntity">
+        select * from liferecord where storageType = '转移' and stockName = #{param1} and state = #{param2} and executorName like concat('%',#{param3},'%') order by recordId desc,happenTime desc
+    </select>
+</mapper>

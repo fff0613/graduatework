@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.DeviceTypeDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.DeviceTypeEntity" id="deviceTypeMap">
+        <result property="type" column="type"/>
+        <result property="descr" column="descr"/>
+        <result property="state" column="state"/>
+    </resultMap>
+    <select id="queryAll" resultType="io.renren.modules.device.entity.DeviceTypeEntity">
+        select * from device_type
+    </select>
+    <insert id="insertType" parameterType="io.renren.modules.device.entity.DeviceTypeEntity">
+        INSERT INTO device_type(type,descr,state) values(#{type},#{descr},#{state})
+    </insert>
+    <update id="updateState" parameterType="io.renren.modules.device.entity.DeviceTypeEntity">
+        update device_type set state = #{state} where type = #{type}
+    </update>
+    <update id="updateType" parameterType="io.renren.modules.device.entity.DeviceTypeEntity">
+        update device_type set state = #{state},descr=#{descr} where type = #{type}
+    </update>
+    <select id="queryByName" parameterType="java.lang.String" resultType="io.renren.modules.device.entity.DeviceTypeEntity">
+        select * from device_type where type like concat('%',#{s},'%')
+    </select>
+    <select id="queryAllType" resultType="java.lang.String">
+        select type from device_type
+    </select>
+</mapper>

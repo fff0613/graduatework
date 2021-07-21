@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.MissionitemDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.MissionitemEntity" id="missionitemMap">
+        <result property="itemid" column="itemid" jdbcType="INTEGER"/>
+        <result property="itemname" column="itemname" jdbcType="VARCHAR"/>
+        <result property="itemdescr" column="itemdescr" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="VARCHAR"/>
+        <result property="method" column="method" jdbcType="VARCHAR"/>
+        <result property="result" column="result" jdbcType="VARCHAR"/>
+        <result property="hours" column="hours" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="queryAll" resultType="io.renren.modules.device.entity.MissionitemEntity">
+        select * from missionitem
+    </select>
+    <insert id="insertItem" parameterType="io.renren.modules.device.entity.MissionitemEntity">
+        insert into missionitem values(#{itemid},#{itemname},#{itemdescr},#{state},#{method},#{result},#{hours})
+    </insert>
+    <update id="updateItem" parameterType="io.renren.modules.device.entity.MissionitemEntity">
+        update missionitem set itemname=#{itemname},itemdescr=#{itemdescr},state=#{state},method=#{method},result=#{result},hours=#{hours} 
+            where itemid=#{itemid}
+    </update>
+    <delete id="deleteItem" parameterType="Integer">
+        delete from missionitem where itemid=#{itemid}
+    </delete>
+    <select id="queryByName" parameterType="String">
+        select * from missionitem where itemname like concat('%',#{name},'%');
+    </select>
+    <select id="queryById" resultType="io.renren.modules.device.entity.MissionitemEntity">
+        select * from missionitem where itemid = #{param1}
+    </select>
+    <select id="getProList" resultType="Integer">
+        select distinct proid from maintain_device where deviceid = #{param1}
+    </select>
+</mapper>

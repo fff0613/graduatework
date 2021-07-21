@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.OrganizationDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.OrganizationEntity" id="organizationMap">
+        <result property="orgid" column="orgId" jdbcType="VARCHAR"/>
+        <result property="innerid" column="innerId" jdbcType="VARCHAR"/>
+        <result property="orgname" column="orgName" jdbcType="VARCHAR"/>
+        <result property="shortname" column="shortName" jdbcType="VARCHAR"/>
+        <result property="country" column="country" jdbcType="VARCHAR"/>
+        <result property="province" column="province" jdbcType="VARCHAR"/>
+        <result property="city" column="city" jdbcType="VARCHAR"/>
+        <result property="district" column="district" jdbcType="VARCHAR"/>
+        <result property="street" column="street" jdbcType="VARCHAR"/>
+        <result property="streetnumber" column="streetNumber" jdbcType="INTEGER"/>
+        <result property="state" column="state" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="queryAll" resultType="io.renren.modules.device.entity.OrganizationEntity">
+        select * from organization
+    </select>
+    <select id="queryAllBystate" resultType="io.renren.modules.device.entity.OrganizationEntity">
+        select * from organization where state = '启用'
+    </select>
+    <insert id="insertOrg" parameterType="io.renren.modules.device.entity.OrganizationEntity">
+        INSERT INTO organization values(#{orgid},#{innerid},#{orgname},#{shortname},#{country},#{province},#{city},#{district},#{street},#{streetnumber},#{state})
+    </insert>
+    <select id="queryByName" parameterType="java.lang.String" resultType="io.renren.modules.device.entity.OrganizationEntity">
+        select * from organization where orgName like concat('%',#{s},'%')
+    </select>
+    <select id="queryOrgList" resultType="java.lang.String">
+        select orgName from organization
+    </select>
+    <update id="updateOrg" parameterType="io.renren.modules.device.entity.OrganizationEntity">
+        update organization set orgId = #{orgid},innerId=#{innerid},shortName=#{shortname},country=#{country},province=#{province}
+            ,city=#{city},district=#{district},street=#{street},streetNumber=#{streetnumber},state=#{state} where orgName = #{orgname}
+    </update>
+    <delete id="deleteOrg" parameterType="java.lang.String">
+        delete from organization where orgName = #{orgname}
+    </delete>
+
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.EffectiveProtocolDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.EffectiveProtocolEntity" id="effectiveProtocolMap">
+        <result property="proid" column="proId" jdbcType="INTEGER"/>
+        <result property="deviceid" column="deviceId" jdbcType="INTEGER"/>
+        <result property="proname" column="proName" jdbcType="VARCHAR"/>
+        <result property="protype" column="proType" jdbcType="VARCHAR"/>
+        <result property="manufacture" column="manufacture" jdbcType="VARCHAR"/>
+        <result property="starttime" column="startTime" jdbcType="TIMESTAMP"/>
+        <result property="endtime" column="endTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <select id="queryProList" resultType="io.renren.modules.device.entity.EffectiveProtocolEntity">
+        select * from effective_protocol where deviceId = #{param1}
+    </select>
+    <insert id="insertPro" parameterType="io.renren.modules.device.entity.EffectiveProtocolEntity">
+        insert into effective_protocol(deviceId,proName,proType,manufacture,startTime,endTime) values (#{deviceid},#{proname},#{protype},#{manufacture},#{starttime},#{endtime})
+    </insert>
+    <update id="updatePro" parameterType="io.renren.modules.device.entity.EffectiveProtocolEntity">
+        update effective_protocol set deviceId=#{deviceid},proName=#{proname},proType=#{protype},manufacture=#{manufacture},
+        startTime=#{starttime},endTime=#{endtime} where proId = #{proid}
+    </update>
+    <delete id="deletePro" parameterType="java.lang.Integer">
+        delete from effective_protocol where proId = #{proid} and deviceId = #{deviceid}
+    </delete>
+
+</mapper>

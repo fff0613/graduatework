@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.DeviceOrgDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.DeviceOrgEntity" id="deviceOrgMap">
+        <result property="deviceid" column="deviceId"/>
+        <result property="orgname" column="orgName"/>
+    </resultMap>
+    <insert id="insertOrg" parameterType="io.renren.modules.device.entity.DeviceOrgEntity">
+        insert into device_org values(#{deviceid},#{orgname})
+    </insert>
+    <delete id="deleteOrg" parameterType="io.renren.modules.device.entity.DeviceOrgEntity">
+        delete from device_org where deviceId = #{deviceid} and orgName = #{orgname}
+    </delete>
+
+</mapper>
